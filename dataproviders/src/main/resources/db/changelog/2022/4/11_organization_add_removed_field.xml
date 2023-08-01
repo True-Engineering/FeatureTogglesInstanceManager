@@ -1,0 +1,19 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="add_column_ORGANIZATION_REMOVE" author="s.sharaev">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="REMOVED" tableName="ORGANIZATION"/>
+            </not>
+        </preConditions>
+        <addColumn
+                tableName="ORGANIZATION">
+            <column name="REMOVED" type="BOOLEAN" defaultValue="false"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

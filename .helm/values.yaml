@@ -1,0 +1,67 @@
+replicaCount: 1
+
+image:
+  registry: ""
+  serviceName: feature-flag-manager
+  liquibaseName: feature-flag-manager-liquibase
+  tag: ---
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 4180
+
+actuatorPath: /actuator/health
+
+imagePullSecrets:
+  registry: ""
+  username: ""
+  password: ""
+  name: open-featuretooglesportal-docreg-secret
+
+#----------------------------------------------------------
+livenessProbeTime:
+  small:
+    initialDelaySeconds: 60
+  medium:
+    initialDelaySeconds: 90
+  large:
+    initialDelaySeconds: 120
+
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 10
+#----------------------------------------------------------
+readinessProbeTime:
+  small:
+    initialDelaySeconds: 60
+  medium:
+    initialDelaySeconds: 90
+  large:
+    initialDelaySeconds: 120
+
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 10
+#----------------------------------------------------------
+resourceRequests:
+  memory: "768Mi"
+  cpu: "300m"
+#----------------------------------------------------------
+resourceLimits:
+  memory: "2Gi"
+  cpu: "1000m"
+#----------------------------------------------------------
+appEnvironment:
+  DB_URL: "jdbc:postgresql://postgres-postgresql:5432/db_feature_flags"
+  DB_USERNAME: "postgres"
+  DB_PASSWORD: "password"
+  SPRING_LIQUIBASE_ENABLED: "false"
+  LOGSTASH_HOSTS: ""
+  DATA_CENTER_NAME: "opensource-dev"
+
+oauth2_proxy:
+  image: quay.io/oauth2-proxy/oauth2-proxy
+  version: v7.2.1
+

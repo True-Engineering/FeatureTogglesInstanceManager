@@ -1,0 +1,24 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <include file="/db/changelog/2022/4/01_init.xml"/>
+    <include file="/db/changelog/2022/4/11_organization_add_removed_field.xml"/>
+    <include file="/db/changelog/2022/4/12_add_invitation.xml"/>
+    <include file="/db/changelog/2022/4/12_create_user_table.xml"/>
+    <include file="/db/changelog/2022/5/01_create_spring_acl.xml"/>
+    <include file="/db/changelog/2022/4/13_user_add_default_project_field.xml"/>
+    <include file="/db/changelog/2022/5/20_project_acl.xml"/>
+    <include file="/db/changelog/2023-02-09-create-table-env-email.xml"/>
+    <include file="/db/changelog/2023-02-14-features-add-removed-field.xml"/>
+    <include file="/db/changelog/2023-02-14-create-table-ff-changes-history.xml"/>
+    <include file="/db/changelog/2023-02-20-ff-changes-history-add-projectId-field.xml"/>
+    <include file="/db/changelog/2023-03-21-ff-changes-history-add-changes-field.xml"/>
+    <include file="/db/changelog/2023-05-05-custom-properties-rename.xml"/>
+    <include file="/db/changelog/2023-05-05-create-properties-tables.xml"/>
+    <include file="/db/changelog/2023-06-07-ff-changes-history-remove-sent-field.xml"/>
+    <include file="/db/changelog/2023-06-22-ff-changes-history-add-creation-info-field.xml"/>
+    <include file="/db/changelog/2023-06-22-quartz-init.xml"/>
+</databaseChangeLog>

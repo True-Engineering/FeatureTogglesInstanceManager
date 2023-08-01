@@ -1,0 +1,2 @@
+FROM liquibase/liquibase
+COPY ./dataproviders/src/main/resources/db/changelog /db/changelog

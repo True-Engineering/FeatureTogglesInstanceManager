@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="LOGS" value="./logs"/>
+    <contextName>feature-flag-instance-manager</contextName>
+
+    <appender name="Console"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{ISO8601} %highlight(%-5level) [%blue(%t)] %yellow(%C{1.}): %msg%n%throwable
+            </Pattern>
+        </layout>
+    </appender>
+
+    <if condition='!isDefined("LOGSTASH_HOSTS")'>
+        <then>
+            <appender name="json-appender"
+                      class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>${LOGS}/ff-portal.log</file>
+                <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                    <providers>
+                        <timestamp/>
+                        <message/>
+                        <loggerName/>
+                        <threadName/>
+                        <logLevel/>
+                        <contextName>
+                            <fieldName>applicationName</fieldName>
+                        </contextName>
+                        <stackTrace>
+                            <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                                <maxDepthPerThrowable>30</maxDepthPerThrowable>
+                                <maxLength>16384</maxLength>
+                                <shortenedClassNameLength>20</shortenedClassNameLength>
+                                <exclude>sun\.reflect\..*\.invoke.*</exclude>
+                            </throwableConverter>
+                        </stackTrace>
+                        <mdc/>
+                        <arguments/>
+                        <pattern>
+                            <pattern>
+                                {"pod": "${HOSTNAME}",
+                                "appVersion":"${APP_VERSION}"}
+                            </pattern>
+                        </pattern>
+                    </providers>
+
+                </encoder>
+                <rollingPolicy
+                        class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                    <!-- rollover daily and when the file reaches 10 MegaBytes -->
+                    <fileNamePattern>${LOGS}/archived/ff-portal-%d{yyyy-MM-dd}.%i.log
+                    </fileNamePattern>
+                    <timeBasedFileNamingAndTriggeringPolicy
+                            class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                        <maxFileSize>30MB</maxFileSize>
+                    </timeBasedFileNamingAndTriggeringPolicy>
+                </rollingPolicy>
+            </appender>
+        </then>
+    </if>
+
+    <if condition='isDefined("LOGSTASH_HOSTS")'>
+        <then>
+            <appender name="async" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+                <destination>${LOGSTASH_HOSTS}</destination>
+                <ringBufferSize>131072</ringBufferSize>
+                <keepAliveDuration>5 minutes</keepAliveDuration>
+                <reconnectionDelay>10 second</reconnectionDelay>
+                <!-- JSON encoder -->
+                <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                    <providers>
+                        <timestamp/>
+                        <message/>
+                        <loggerName/>
+                        <threadName/>
+                        <logLevel/>
+                        <contextName>
+                            <fieldName>applicationName</fieldName>
+                        </contextName>
+                        <stackTrace>
+                            <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                                <maxDepthPerThrowable>30</maxDepthPerThrowable>
+                                <maxLength>16384</maxLength>
+                                <shortenedClassNameLength>20</shortenedClassNameLength>
+                                <exclude>sun\.reflect\..*\.invoke.*</exclude>
+                            </throwableConverter>
+                        </stackTrace>
+                        <mdc/>
+                        <arguments/>
+                        <pattern>
+                            <pattern>
+                                {
+                                "pod": "${HOSTNAME}",
+                                "index":"feature_flag_${LOGSTASH_INDEX}",
+                                "appVersion":"${APP_VERSION}"}
+                            </pattern>
+                        </pattern>
+                    </providers>
+                </encoder>
+            </appender>
+        </then>
+    </if>
+
+
+    <!-- LOG everything at INFO level -->
+    <root level="info">
+        <if condition='isDefined("LOGSTASH_HOSTS")'>
+            <then>
+                <appender-ref ref="async"/>
+                <appender-ref ref="Console"/>
+            </then>
+        </if>
+        <if condition='!isDefined("LOGSTASH_HOSTS")'>
+            <then>
+                <appender-ref ref="Console"/>
+                <appender-ref ref="json-appender"/>
+            </then>
+        </if>
+    </root>
+
+    <logger name="org.testcontainers" level="info" additivity="false"/>
+    <logger name="ru.trueengineering" level="DEBUG"/>
+
+</configuration>

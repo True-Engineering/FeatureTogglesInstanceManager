@@ -1,0 +1,35 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="create_USERS" author="s.sharaev">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="USERS"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="USERS">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" unique="true"
+                             primaryKeyName="user_pkey"/>
+            </column>
+            <column name="EMAIL" type="VARCHAR">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="USER_NAME" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER_STATUS" type="VARCHAR"/>
+            <column name="LAST_LOGIN" type="DATETIME"/>
+            <column name="CREATED" type="DATETIME"/>
+            <column name="UPDATED" type="DATETIME"/>
+            <column name="REMOVED" type="BOOLEAN" defaultValue="false"/>
+        </createTable>
+    </changeSet>
+
+
+</databaseChangeLog>

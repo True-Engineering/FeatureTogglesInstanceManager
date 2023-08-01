@@ -1,0 +1,220 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="create_ORGANIZATION" author="m.yastrebov">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ORGANIZATION"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="ORGANIZATION">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" unique="true"
+                             primaryKeyName="organization_pkey"/>
+            </column>
+            <column name="ORGANIZATION_NAME" type="VARCHAR">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="CREATED" type="DATETIME"/>
+            <column name="UPDATED" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create_PROJECT" author="m.yastrebov">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="PROJECT"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="PROJECT">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" unique="true"
+                             primaryKeyName="project_pkey"/>
+            </column>
+            <column name="PROJECT_NAME" type="VARCHAR">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="ORGANIZATION_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="project_to_organization_fk"
+                             referencedTableName="organization" referencedColumnNames="ID"/>
+            </column>
+            <column name="CREATED" type="DATETIME"/>
+            <column name="UPDATED" type="DATETIME"/>
+            <column name="REMOVED" type="BOOLEAN" defaultValue="false"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create_ENVIRONMENT" author="m.yastrebov">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ENVIRONMENT"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="ENVIRONMENT">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" unique="true"
+                             primaryKeyName="env_pkey"/>
+            </column>
+            <column name="ENVIRONMENT_NAME" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="AUTH_KEY_HASH" type="VARCHAR"/>
+            <column name="PROJECT_ID" type="BIGINT">
+                <constraints foreignKeyName="env_to_project_fk" referencedTableName="PROJECT"
+                             referencedColumnNames="ID"/>
+            </column>
+            <column name="CREATED" type="DATETIME"/>
+            <column name="UPDATED" type="DATETIME"/>
+            <column name="REMOVED" type="BOOLEAN" defaultValue="false"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create_ENV_INSTANCE" author="m.yastrebov">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ENV_INSTANCE"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="ENV_INSTANCE">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" unique="true"
+                             primaryKeyName="instance_pkey"/>
+            </column>
+            <column name="INSTANCE_NAME" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STATUS" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENVIRONMENT_ID" type="BIGINT">
+                <constraints foreignKeyName="instance_to_env_fk" referencedTableName="ENVIRONMENT"
+                             referencedColumnNames="ID"/>
+            </column>
+            <column name="CREATED" type="DATETIME"/>
+            <column name="UPDATED" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create_FEATURES" author="m.yastrebov">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FEATURES"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="FEATURES">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" unique="true"
+                             primaryKeyName="feature_pkey"/>
+            </column>
+
+            <column name="FEAT_UID" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR"/>
+            <column name="FEATURE_TYPE" type="VARCHAR"/>
+            <column name="FEATURE_GROUP" type="VARCHAR"/>
+            <column name="SPRINT" type="VARCHAR"/>
+            <column name="FEATURE_TAG" type="VARCHAR"/>
+
+            <column name="PROJECT_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="ff_to_project_fk" referencedTableName="PROJECT"
+                             referencedColumnNames="ID"/>
+            </column>
+            <column name="CREATED" type="DATETIME"/>
+            <column name="UPDATED" type="DATETIME"/>
+        </createTable>
+
+        <addUniqueConstraint columnNames="FEAT_UID, PROJECT_ID"
+                             constraintName="FEATURE_PROJECT_UNIQUE"
+                             tableName="FEATURES"/>
+    </changeSet>
+
+
+
+    <changeSet id="create_FEATURE_ENVIRONMENT_STATE" author="s.sharaev">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FEATURE_ENVIRONMENT_STATE"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="FEATURE_ENVIRONMENT_STATE">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" unique="true"
+                             primaryKeyName="feature_environment_state_pkey"/>
+            </column>
+            <column name="FEATURE_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="feature_env_to_features_fk" referencedTableName="FEATURES"
+                             referencedColumnNames="ID"/>
+            </column>
+            <column name="ENVIRONMENT_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="feature_env_to_envs_fk" referencedTableName="ENVIRONMENT"
+                             referencedColumnNames="ID"/>
+            </column>
+            <column name="STRATEGY" type="VARCHAR"/>
+            <column name="STRATEGY_PARAMS" type="VARCHAR"/>
+            <column name="ENABLE" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED" type="DATETIME"/>
+            <column name="UPDATED" type="DATETIME"/>
+        </createTable>
+        <addPrimaryKey columnNames="FEATURE_ID, ENVIRONMENT_ID" tableName="FEATURE_ENVIRONMENT_STATE"/>
+    </changeSet>
+
+    <changeSet id="create_FEATURE_ENVIRONMENT_STATE_constraint" author="s.sharaev">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="FEATURE_ENVIRONMENT_STATE"/>
+                <sqlCheck expectedResult="0">
+                    select count(*) from pg_catalog.pg_constraint c where c.conname = 'feature_env_unique'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <addUniqueConstraint columnNames="FEATURE_ID, ENVIRONMENT_ID"
+                             constraintName="FEATURE_ENV_UNIQUE"
+                             tableName="FEATURE_ENVIRONMENT_STATE"/>
+    </changeSet>
+
+    <changeSet id="create_CUSTOM_PROPERTIES" author="m.yastrebov">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="CUSTOM_PROPERTIES"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="CUSTOM_PROPERTIES">
+            <column autoIncrement="true" name="PROPERTY_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CLAZZ" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CURRENTVALUE" type="VARCHAR"/>
+            <column name="DESCRIPTION" type="VARCHAR"/>
+            <column name="FEAT_ID" type="BIGINT">
+                <constraints foreignKeyName="property_to_ff_fk" referencedTableName="FEATURES"
+                             referencedColumnNames="ID"/>
+            </column>
+            <column name="CREATED" type="DATETIME"/>
+            <column name="UPDATED" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+
+</databaseChangeLog>

@@ -1,0 +1,20 @@
+image:
+  registry: local
+  serviceName: feature-flag-instance-manager
+  tag: latest
+  pullPolicy: Never
+
+oauth2_proxy:
+  config:
+    proxyHttpPort: 4180
+    emailDomains: ["example.com"]
+    cookieDomains: [".localtest.me", ".eastbanctech.ru"]
+    whitelistDomains: [".localtest.me", ".eastbanctech.ru"]
+    cookieSecret: OQINaROshtE9TcZkNAm-5Zs2Pv3xaWytBmc5W7sPX7w=
+    clientSecret: 72341b6d-7065-4518-a0e4-50ee15025608
+    clientId: oauth2-proxy
+    redirectUrl: http://oauth2-proxy.localtest.me:4180/oauth2/callback
+    oidcIssuerUrl: http://keycloak.localtest.me:9080/auth/realms/master
+    validateUrl: http://keycloak.localtest.me:9080/auth/realms/master/protocol/openid-connect/userinfo
+    redeemUrl: http://keycloak.localtest.me:9080/auth/realms/master/protocol/openid-connect/token
+    skipAuthRotes: [ '^/api/agent/*']

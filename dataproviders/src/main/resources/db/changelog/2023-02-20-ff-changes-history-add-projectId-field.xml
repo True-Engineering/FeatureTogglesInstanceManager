@@ -1,0 +1,21 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="add_column_FF_CHANGES_HISTORY_PROJECT_ID" author="a.korneshchuk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="PROJECT_ID" tableName="FF_CHANGES_HISTORY"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_CHANGES_HISTORY">
+            <column name="PROJECT_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="ff_changes_history_to_project_fk" referencedTableName="PROJECT"
+                             referencedColumnNames="ID"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

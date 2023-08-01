@@ -1,0 +1,67 @@
+spring:
+  application:
+    name: feature-flag-manager
+  liquibase:
+    enabled: true
+    change-log: db/changelog/master-changelog.xml
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL10Dialect
+    open-in-view: true
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/ff-db}
+    username: ${DB_USERNAME:user}
+    password: ${DB_PASSWORD:pass}
+    driver-class-name: org.postgresql.Driver
+  quartz:
+    job-store-type: jdbc
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceId: AUTO
+          jobStore:
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+            tablePrefix: QRTZ_
+
+springdoc:
+  api-docs:
+    path: "/${spring.application.name}/v3/api-docs"
+  swagger-ui:
+    url: "/${spring.application.name}/v3/api-docs"
+    configUrl: "/${spring.application.name}/v3/api-docs/swagger-config"
+    path: "/${spring.application.name}/swagger-ui.html"
+
+trueengineering:
+  logging:
+    packages: ru.trueengineering.featureflag.manager.ports.rest.controller
+    base:
+      package:
+        for:
+          models: ru.trueengineering.featureflag.manager.ports.rest.controller
+
+featureFlag:
+  auth:
+    client:
+      inSecurityUrls: /actuator/health,/**/swagger-ui.html,/**/swagger-ui/**,/**/swagger-config,/**/api-docs
+  instance:
+    checkStatusPeriod: 1000
+    outOfSyncPeriod: 1800
+  portal:
+    default:
+      organization:
+        name: ${ORGANIZATION_NAME:TrueEngineering}
+
+server:
+  max-http-header-size: 10MB
+
+management:
+  metrics:
+    export:
+      influx:
+        enabled: ${INFLUXDB_METRICS_ENABLED:false}
+        db: ${INFLUXDB_METRICS_DB}
+        uri: ${INFLUXDB_METRICS_URI}

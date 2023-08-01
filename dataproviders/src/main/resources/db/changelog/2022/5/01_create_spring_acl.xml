@@ -1,0 +1,16 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="create_acl_ddl" author="m.yastrebov">
+        <sqlFile path="mysql.spring-acl-ddl.sql" dbms="mysql" encoding="UTF-8" relativeToChangelogFile="true" stripComments="true" splitStatements="true"/>
+        <sqlFile path="postgres.spring-sequrity-ddl.sql" dbms="postgresql" encoding="UTF-8" relativeToChangelogFile="true" stripComments="true" splitStatements="true"/>
+        <sqlFile path="oracle.spring-sequrity-ddl.sql" dbms="oracle" encoding="UTF-8" relativeToChangelogFile="true" stripComments="true" splitStatements="true"/>
+        <sqlFile path="sql-server.spring-sequrity-ddl.sql" dbms="mssql" encoding="UTF-8" relativeToChangelogFile="true" stripComments="true" splitStatements="true"/>
+    </changeSet>
+
+
+
+</databaseChangeLog>

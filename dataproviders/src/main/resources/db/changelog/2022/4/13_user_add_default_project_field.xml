@@ -1,0 +1,23 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="user_add_default_project_column" author="s.sharaev">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="DEFAULT_PROJECT_ID" tableName="USERS"/>
+            </not>
+        </preConditions>
+        <addColumn
+                tableName="USERS">
+            <column name="DEFAULT_PROJECT_ID" type="BIGINT">
+            <constraints nullable="true" foreignKeyName="user_to_project_fk" referencedTableName="PROJECT"
+                         referencedColumnNames="ID"/>
+            </column>
+        </addColumn>
+
+    </changeSet>
+
+</databaseChangeLog>

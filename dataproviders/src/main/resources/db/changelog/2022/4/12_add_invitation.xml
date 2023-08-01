@@ -1,0 +1,29 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="create_INVITATION" author="m.yastrebov">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="INVITATION"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="INVITATION">
+            <column name="ID" type="UUID">
+                <constraints nullable="false" unique="true"
+                             primaryKeyName="invitation_pkey"/>
+            </column>
+            <column name="PROJECT_ID" type="BIGINT">
+                <constraints nullable="false" unique="true" foreignKeyName="invitation_to_project_fk"
+                             referencedTableName="PROJECT" referencedColumnNames="ID"/>
+            </column>
+            <column name="CREATED" type="DATETIME"/>
+            <column name="UPDATED" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: backend
+          image: {{ .Values.image.registry }}/{{ .Values.image.serviceName }}:{{ $.Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.actuatorPath }}
+              port: http
+            initialDelaySeconds: {{ .Values.livenessProbeTime.small.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbeTime.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbeTime.timeoutSeconds }}
+            failureThreshold: {{ .Values.livenessProbeTime.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.actuatorPath }}
+              port: http
+            initialDelaySeconds: {{ .Values.readinessProbeTime.small.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbeTime.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbeTime.timeoutSeconds }}
+            failureThreshold: {{ .Values.readinessProbeTime.failureThreshold }}
+          env:
+            - name: APP_VERSION
+              value: {{ .Values.image.tag }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-configmap
+          resources:
+            requests:
+              memory: {{ .Values.resourceRequests.memory }}
+              cpu: {{ .Values.resourceRequests.cpu }}
+            limits:
+              memory: {{ .Values.resourceLimits.memory }}
+              cpu: {{ .Values.resourceLimits.cpu }}
+        - name: oauth2-proxy
+          image: {{ .Values.oauth2_proxy.image }}:{{ .Values.oauth2_proxy.version }}
+          args: ["--config=/opt/oauth2-proxy/conf/oauth2-proxy.cfg"]
+          volumeMounts:
+            - name: oauth2-proxy-config
+              mountPath: "/opt/oauth2-proxy/conf/oauth2-proxy.cfg"
+              subPath: "oauth2-proxy.cfg"
+              readOnly: true
+          ports:
+            - containerPort: 4180
+      volumes:
+        - name: oauth2-proxy-config
+          configMap:
+            name: oauth2-proxy-config
+      initContainers:
+        - name: liquibase
+          image: {{ .Values.image.registry }}/{{ .Values.image.liquibaseName }}:{{ $.Values.image.tag }}
+          args:
+            - --url=$(DB_URL)
+            - --username=$(DB_USERNAME)
+            - --password=$(DB_PASSWORD)
+            - --classpath=/
+            - --changeLogFile=/db/changelog/master-changelog.xml
+            - update
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-configmap
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets.name }}
+        - name: docker-auth-{{ .Release.Name }}

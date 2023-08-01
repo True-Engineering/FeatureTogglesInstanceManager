@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+
+  nginx-proxy:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./dev-nginx.conf:/etc/nginx/nginx.conf:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  frontend:
+    container_name: ui
+    image: feature-flag-app-dev:latest
+    ports:
+      - "8081:8080"
+
+  database:
+    container_name: database
+    image: postgres:10
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./.data/database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: 'user'
+      POSTGRES_PASSWORD: 'pass'
+      POSTGRES_DB: 'ff-db'
+#  liquibase:
+#    build:
+#      context: ./
+#      dockerfile: Dockerfile.liquibase
+#    command:
+#      - --url=jdbc:postgresql://database:5432/ff-db
+#      - --username=user
+#      - --password=pass
+#      - --classpath=/
+#      - --changeLogFile=/db/changelog/master-changelog.xml
+#      - update
+#    depends_on:
+#      - database

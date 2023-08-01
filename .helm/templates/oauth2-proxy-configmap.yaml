@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oauth2-proxy-config
+  labels:
+    app: {{ .Release.Name }}
+data:
+  oauth2-proxy.cfg: |
+    http_address="0.0.0.0:{{ .Values.service.targetPort }}"
+    cookie_secret="{{ .Values.oauth2_proxy.config.cookieSecret }}"
+    email_domains={{ .Values.oauth2_proxy.config.emailDomains  | toJson | indent 4 }}
+    cookie_secure="false"
+    upstreams="http://localhost:{{ .Values.service.port }}/"
+
+    cookie_domains={{ .Values.oauth2_proxy.config.cookieDomains  | toJson | indent 4 }} # Required so cookie can be read on all subdomains.
+    whitelist_domains={{ .Values.oauth2_proxy.config.whitelistDomains  | toJson | indent 4 }} # Required to allow redirection back to original requested target.
+
+    # keycloak provider
+    client_secret="{{ .Values.oauth2_proxy.config.clientSecret }}"
+    client_id="{{ .Values.oauth2_proxy.config.clientId }}"
+    redirect_url="{{ .Values.oauth2_proxy.config.redirectUrl }}"
+
+    oidc_issuer_url="{{ .Values.oauth2_proxy.config.oidcIssuerUrl }}"
+    pass_authorization_header=true
+    skip_provider_button=true
+    provider="oidc"
+    provider_display_name="Keycloak"
+    pass_access_token=true
+
+    insecure_oidc_allow_unverified_email=true
+    validate_url="{{ .Values.oauth2_proxy.config.validateUrl }}"
+    redeem_url="{{ .Values.oauth2_proxy.config.redeemUrl }}"
+
+    cookie_refresh=120000000000
+    skip_auth_routes={{ .Values.oauth2_proxy.config.skipAuthRotes | toJson | indent 4 }}

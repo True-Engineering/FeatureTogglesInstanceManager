@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: feature-flag-manager
+  liquibase:
+    enabled: true
+    change-log: db/changelog/master-changelog.xml
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL10Dialect
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ff-db-test
+    username: user
+    password: pass
+    driver-class-name: org.postgresql.Driver
+
+logging:
+  level:
+    root: INFO
+

@@ -1,0 +1,18 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="add_column_FF_CHANGES_HISTORY_CREATION_INFO" author="a.korneshchuk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="CREATION_INFO" tableName="FF_CHANGES_HISTORY"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_CHANGES_HISTORY">
+            <column name="CREATION_INFO" type="JSONB"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

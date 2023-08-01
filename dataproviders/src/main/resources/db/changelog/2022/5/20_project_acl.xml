@@ -1,0 +1,16 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="create_acl_ddl" author="m.yastrebov">
+        <insert tableName="acl_class">
+            <column name="class">ru.trueengineering.featureflag.manager.core.domen.project.Project</column>
+            <column name="class_id_type">kotlin.Long</column>
+        </insert>
+    </changeSet>
+
+
+
+</databaseChangeLog>
