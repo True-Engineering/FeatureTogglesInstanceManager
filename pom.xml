@@ -73,7 +73,7 @@
         <dependency>
             <groupId>ru.trueengineering</groupId>
             <artifactId>true-logger</artifactId>
-            <version>1.12</version>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 
@@ -241,9 +241,4 @@
         </plugins>
 
     </build>
-
-
-    <repositories>
-    </repositories>
-
 </project>

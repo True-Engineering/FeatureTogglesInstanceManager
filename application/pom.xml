@@ -90,23 +90,10 @@
                 <executions>
                     <execution>
                         <goals>
-                            <goal>build-info</goal>
                             <goal>repackage</goal>
-                            <goal>build-image</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <image>
-                        <tags>
-                            <tag>${docker.image.name}:latest</tag>
-                        </tags>
-                        <name>${docker.image.name}:${docker.image.version}</name>
-                    </image>
-                    <layers>
-                        <enabled>true</enabled>
-                    </layers>
-                </configuration>
             </plugin>
         </plugins>
     </build>

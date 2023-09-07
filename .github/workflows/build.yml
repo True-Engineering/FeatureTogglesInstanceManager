@@ -1,0 +1,49 @@
+name: Build and push to ghcr.io
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  GITHUB_USERNAME: ${{ github.actor }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - uses: paulhatch/semantic-version@v5.1.0
+      id: generate-version
+      with:
+        tag_prefix: "v"
+    - name: Build manager Docker image
+      run: docker build . --file docker/Dockerfile -t ghcr.io/true-engineering/feature-flag-manager:$SEM_VERSION --build-arg GITHUB_TOKEN=$GITHUB_TOKEN
+      env:
+        SEM_VERSION: ${{ steps.generate-version.outputs.version }}
+    - name: Build liquibase Docker image
+      run: docker build . --file docker/Dockerfile.liquibase -t ghcr.io/true-engineering/feature-flag-manager-liquibase:$SEM_VERSION --build-arg GITHUB_TOKEN=$GITHUB_TOKEN
+      env:
+        SEM_VERSION: ${{ steps.generate-version.outputs.version }}
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker push manager
+      run: docker push ghcr.io/true-engineering/feature-flag-manager:$SEM_VERSION
+      env:
+        SEM_VERSION: ${{ steps.generate-version.outputs.version }}
+    - name: Docker push liquibase
+      run: docker push ghcr.io/true-engineering/feature-flag-manager-liquibase:$SEM_VERSION
+      env:
+        SEM_VERSION: ${{ steps.generate-version.outputs.version }}
+    - name: Create tag and push
+      run: git tag v${{ steps.generate-version.outputs.version }} && git push --tags || echo "tag already exist"
