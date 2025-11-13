@@ -46,7 +46,7 @@ trueengineering:
 featureFlag:
   auth:
     client:
-      inSecurityUrls: /actuator/health,/**/swagger-ui.html,/**/swagger-ui/**,/**/swagger-config,/**/api-docs
+      inSecurityUrls: /actuator/**,/**/swagger-ui.html,/**/swagger-ui/**,/**/swagger-config,/**/api-docs
   instance:
     checkStatusPeriod: 1000
     outOfSyncPeriod: 1800
@@ -59,9 +59,22 @@ server:
   max-http-header-size: 10MB
 
 management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      group:
+        startup:
+          include:
+            - livenessState
+            - readinessState
   metrics:
     export:
       influx:
         enabled: ${INFLUXDB_METRICS_ENABLED:false}
         db: ${INFLUXDB_METRICS_DB}
         uri: ${INFLUXDB_METRICS_URI}
+  endpoints:
+    web:
+      exposure:
+        include: health
